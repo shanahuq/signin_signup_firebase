@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:signin_signup_project/ui_pages/sign_in_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:signin_signup_project/ui_pages/sign_up_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,13 +13,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return
-      ScreenUtilInit(
-        designSize: Size(414, 896),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (context,child) {
-          return   MaterialApp(
+    return ScreenUtilInit(
+      designSize: Size(414, 896),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
           theme: ThemeData(
@@ -39,15 +39,9 @@ class MyApp extends StatelessWidget {
             // tested with just a hot reload.
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           ),
-          home: const SignInPage(),
-        
+          home: const SignUpPage(),
         );
-        }
-       
-      );
-
+      },
+    );
   }
 }
-
-
-
