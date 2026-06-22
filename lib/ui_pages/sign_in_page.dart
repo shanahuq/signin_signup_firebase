@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:signin_signup_project/ui_pages/home_page.dart';
+import 'package:signin_signup_project/ui_pages/sign_up_page.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -11,6 +14,33 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   bool isvisible = true;
   bool ischecked = true;
+  TextEditingController email_controller = TextEditingController();
+  TextEditingController password_controller = TextEditingController();
+
+  Future<void> signIn(String email, String password) async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      print("Login success");
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+
+    } on FirebaseAuthException catch (e) {
+      print("Login error: ${e.code}");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Login failed")),
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +83,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
               SizedBox(height: 10.h),
               TextField(
+                controller: email_controller,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: 'Enter Your Email',
@@ -76,6 +107,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
               SizedBox(height: 10.h),
               TextField(
+                controller: password_controller,
                 obscureText: isvisible,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
@@ -142,7 +174,9 @@ class _SignInPageState extends State<SignInPage> {
                     borderRadius: BorderRadius.circular(10.r),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  signIn(email_controller.text, password_controller.text);
+                },
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 100.w),
                   child: Text(
@@ -194,7 +228,8 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
               SizedBox(height: 30.h),
-              Row(mainAxisAlignment: MainAxisAlignment.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Dont have an account?',
@@ -202,11 +237,19 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   TextButton(
                     onPressed: () {},
-                    child: Text(
-                      'Sign up',
-                      style: TextStyle(
-                        color: Colors.deepPurple,
-                        fontSize: 12.sp,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignUpPage()),
+                        );
+                      },
+                      child: Text(
+                        'Sign up',
+                        style: TextStyle(
+                          color: Colors.deepPurple,
+                          fontSize: 12.sp,
+                        ),
                       ),
                     ),
                   ),

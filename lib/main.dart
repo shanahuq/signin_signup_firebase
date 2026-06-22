@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:signin_signup_project/ui_pages/sign_in_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:signin_signup_project/firebase_options.dart';
+import 'package:signin_signup_project/ui_pages/sign_in_page.dart';
 import 'package:signin_signup_project/ui_pages/sign_up_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+Future<void> main() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
+ await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+);
+
+print("Firebase Connected Successfully");
   runApp(const MyApp());
 }
 
@@ -39,7 +47,7 @@ class MyApp extends StatelessWidget {
             // tested with just a hot reload.
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           ),
-          home: const SignUpPage(),
+          home: const SignInPage(),
         );
       },
     );
