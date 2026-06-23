@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:signin_signup_project/firebase_options.dart';
+import 'package:signin_signup_project/ui_pages/home_page.dart';
 import 'package:signin_signup_project/ui_pages/sign_in_page.dart';
 import 'package:signin_signup_project/ui_pages/sign_up_page.dart';
 import 'package:firebase_core/firebase_core.dart';

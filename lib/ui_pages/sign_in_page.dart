@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 import 'package:signin_signup_project/ui_pages/home_page.dart';
 import 'package:signin_signup_project/ui_pages/sign_up_page.dart';
 
@@ -30,16 +31,42 @@ class _SignInPageState extends State<SignInPage> {
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
       );
-
     } on FirebaseAuthException catch (e) {
       print("Login error: ${e.code}");
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? "Login failed")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message ?? "Login failed")));
     }
   }
 
+  Future<void> signInWithGoogle() async {
+    try {
+      GoogleAuthProvider googleProvider = GoogleAuthProvider();
+
+      googleProvider.addScope('email');
+
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithPopup(googleProvider);
+
+      User? user = userCredential.user;
+
+      print("Name : ${user?.displayName}");
+      print("Email : ${user?.email}");
+      print("UID : ${user?.uid}");
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomePage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Google Sign In Failed")),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -205,7 +232,9 @@ class _SignInPageState extends State<SignInPage> {
               ),
               SizedBox(height: 20.h),
               OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () async {
+                  await signInWithGoogle();
+                },
                 icon: const Icon(Icons.g_mobiledata, size: 50),
                 label: const Text('Continue with Google'),
                 style: OutlinedButton.styleFrom(

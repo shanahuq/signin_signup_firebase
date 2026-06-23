@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:signin_signup_project/ui_pages/home_page.dart';
 import 'package:signin_signup_project/ui_pages/sign_in_page.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -12,6 +14,59 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   bool isvisible = true;
   bool ischeck = true;
+
+  TextEditingController email_controller = TextEditingController();
+  TextEditingController password_controller = TextEditingController();
+
+
+    Future<void> signInWithGoogle() async {
+    try {
+      GoogleAuthProvider googleProvider = GoogleAuthProvider();
+
+      googleProvider.addScope('email');
+
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithPopup(googleProvider);
+
+      User? user = userCredential.user;
+
+      print("Name : ${user?.displayName}");
+      print("Email : ${user?.email}");
+      print("UID : ${user?.uid}");
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomePage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Google Sign In Failed")),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> signUp(String email, String password) async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      print("Account created successfully");
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomePage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message ?? "Sign Up Failed")));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,6 +135,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               SizedBox(height: 10.h),
               TextField(
+                controller: email_controller,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: 'Enter Your Email',
@@ -106,6 +162,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: SizedBox(
                   height: 50.h,
                   child: TextField(
+                    controller: password_controller,
                     textAlign: TextAlign.start,
                     obscureText: isvisible,
                     keyboardType: TextInputType.number,
@@ -217,7 +274,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  signUp(email_controller.text, password_controller.text);
+                },
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 100.w),
                   child: Text(
@@ -249,9 +308,11 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               SizedBox(height: 10.h),
               OutlinedButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.g_mobiledata_rounded, size: 30.sp),
-                label: Text('Continue with Google'),
+                onPressed: () async {
+                  await signInWithGoogle();
+                },
+                icon: const Icon(Icons.g_mobiledata, size: 50),
+                label: const Text('Continue with Google'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: Size(500.w, 50.h),
                   shape: RoundedRectangleBorder(
